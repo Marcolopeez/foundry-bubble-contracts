@@ -23,8 +23,12 @@ contract BubbleMarketplace_Test is Test{
 
     address public constant USER1 = address(0x1);
     address public constant USER2 = address(0x2);
-    address public constant DEPLOYER = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
+    address public constant ANVIL_DEPLOYER = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
+    address public constant SEPOLIA_DEPLOYER = 0x97aa42A297049DD6078B97d4C1f9d384B52f5905;
     address public constant FEE_RECIPIENT = address(0x4);
+    
+    address public DEPLOYER;
+
    
     /************************************** Modifiers **************************************/
     
@@ -59,6 +63,13 @@ contract BubbleMarketplace_Test is Test{
         _;
     }
 
+    modifier onlyAnvil() { 
+        if (block.chainid != 31337) {
+            return;
+        }
+        _;
+    }
+
     /************************************** Set Up **************************************/
 
     function setUp() public {
@@ -74,6 +85,11 @@ contract BubbleMarketplace_Test is Test{
             ,
 
         ) = helperConfig.activeNetworkConfig();
+        if(block.chainid == 11155111){
+            DEPLOYER = SEPOLIA_DEPLOYER;
+        }else if(block.chainid == 31337){
+            DEPLOYER = ANVIL_DEPLOYER;
+        }
     }
 
     /************************************** Tests **************************************/
@@ -168,20 +184,20 @@ contract BubbleMarketplace_Test is Test{
         marketContract.purchase{value: 0.09 ether}();
     }
 
-    function test_purchase_RevertIf_MarketIsPaused() public purchase5NFTsAndFullfillWithSelectedWords() {
+    function test_purchase_RevertIf_MarketIsPaused() public onlyAnvil() purchase5NFTsAndFullfillWithSelectedWords() {
         vm.prank(USER1);
         vm.expectRevert(abi.encodeWithSignature("EnforcedPause()"));   
         marketContract.purchase{value: 0.161051 ether}();        
     }
 
-    function test_release() public purchase5NFTsAndFullfillWithSelectedWords() {
+    function test_release() public onlyAnvil() purchase5NFTsAndFullfillWithSelectedWords() {
         assertTrue(nftContract.regulatedState(), "Incorrect NFT regulated state");
         vm.warp(block.timestamp + marketContract.LOCK_DURATION() + 1);
         marketContract.release();
         assertFalse(nftContract.regulatedState(), "Incorrect NFT regulated state");
     }
 
-    function test_release_RevertIf_LockDurationNotElapsed() public purchase5NFTsAndFullfillWithSelectedWords() {
+    function test_release_RevertIf_LockDurationNotElapsed() onlyAnvil() public purchase5NFTsAndFullfillWithSelectedWords() {
         vm.expectRevert(bytes("Lock duration not yet elapsed"));
         marketContract.release();
     }
@@ -216,7 +232,7 @@ contract BubbleMarketplace_Test is Test{
         marketContract.withdraw();
     }
 
-    function test_fulfillRandomWords() public purchaseNFTs(4) {      
+    function test_fulfillRandomWords() public onlyAnvil() purchaseNFTs(4) {      
         Vm.Log[] memory entries;
         uint256 requestId;
         vm.recordLogs();
@@ -237,7 +253,7 @@ contract BubbleMarketplace_Test is Test{
         
     }
 
-    function test_fulfillRandomWords_ForcingPause() public purchaseNFTs(4) {      
+    function test_fulfillRandomWords_ForcingPause() onlyAnvil() public purchaseNFTs(4) {      
         Vm.Log[] memory entries;
         uint256 requestId;
         vm.recordLogs();

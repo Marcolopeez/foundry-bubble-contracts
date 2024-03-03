@@ -20,8 +20,11 @@ contract BubbleNFT_Test is Test{
     address vrfCoordinatorV2;
 
     address public constant USER1 = address(0x1);
-    address public constant DEPLOYER = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
+    address public constant ANVIL_DEPLOYER = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
+    address public constant SEPOLIA_DEPLOYER = 0x97aa42A297049DD6078B97d4C1f9d384B52f5905;
     address public constant FEE_RECIPIENT = address(0x3);
+    
+    address public DEPLOYER;
 
     string[10] public metadataURIs = [
         "ipfs://QmU2oxcpHVWpiGZZmshP1vihfCigUbzF14EMpA6GdKpcT8",
@@ -67,6 +70,11 @@ contract BubbleNFT_Test is Test{
             ,
 
         ) = helperConfig.activeNetworkConfig();
+        if(block.chainid == 11155111){
+            DEPLOYER = SEPOLIA_DEPLOYER;
+        }else if(block.chainid == 31337){
+            DEPLOYER = ANVIL_DEPLOYER;
+        }
     }
 
     /************************************** Tests **************************************/
