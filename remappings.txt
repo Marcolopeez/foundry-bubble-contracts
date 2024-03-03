@@ -1,1 +1,5 @@
+@forge-std/=lib/forge-std/src/
 @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
+@chainlink/contracts/=lib/chainlink/contracts/src/
+@solmate/=lib/solmate/src/
+@foundry-devops/=lib/foundry-devops/src/
