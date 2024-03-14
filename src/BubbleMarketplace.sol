@@ -49,11 +49,11 @@ contract BubbleMarketplace is Pausable, VRFConsumerBaseV2 {
     uint64 private immutable _subscriptionId;
     uint32 private immutable _callbackGasLimit;
 
-    event NFTPurchased(address indexed buyer, uint256 indexed nftId, uint256 price);
-    event LotteryRequested(uint256 indexed requestId, uint256 timestamp);
-    event MarketplaceLocked(uint256 timestamp);
-    event MarketplaceNotLocked(uint256 timestamp);
-    event NFTsReleased(uint256 timestamp);
+    event NFTPurchased(address indexed buyer, uint256 indexed nftId, uint256 indexed price);
+    event LotteryRequested(uint256 indexed requestId, uint256 indexed timestamp);
+    event MarketplaceLocked(uint256 indexed timestamp);
+    event MarketplaceNotLocked(uint256 indexed timestamp);
+    event NFTsReleased(uint256 indexed timestamp);
 
     /**
      * @dev Constructor to set the NFT contract address and the fee recipient address.

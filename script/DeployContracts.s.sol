@@ -10,16 +10,16 @@ import {AddConsumer, CreateSubscription, FundSubscription} from "./Interactions.
 contract DeployContracts is Script {
 
     string[10] public metadataURIs = [
-        "ipfs://QmU2oxcpHVWpiGZZmshP1vihfCigUbzF14EMpA6GdKpcT8",
-        "ipfs://QmbMytFCrjUCouwZAaJ81zMZaZdpKy4sEKS1evGuRo5f8z",
-        "ipfs://QmTKfHTGTkyxVJ7Gn4Eezi1m6qF29sGNESA7hs6DCsHQ8k",
-        "ipfs://QmXUwAFH7V6sFUDQtSyBFnQuWYbRRJWbH7m2EUNXLjzzhN",
-        "ipfs://Qmcyc1iNNxpw7hmQu7NvTnapz9qmSH79CLdykjfxVXAPPa",
-        "ipfs://QmcsE9h1vfVLCDKYtB8yerSNArAMxKBwGFLpj387miwC6p",
-        "ipfs://QmVT4LocC1RMAFkHW8yu5mJBjKtbXWMqvhV3CDZdQsNNwc",
-        "ipfs://QmXbRdqyHQUYtVXfC8GfFpNgVkxegDEwRd4XjP7DmAGMt4",
-        "ipfs://QmdNG6pEr4ncVuutSjD3m5mGkuYaHDsdsa6bdXQugtkK6L",
-        "ipfs://QmazRJRM6zAFezWVvNvKjnBx2i5g2CVWQJY2p4YvUJaHP3"
+        "ipfs://QmYpqMPXG9LjbQDXQSnc4WD3mRATwnyahe2bzDhRkHMDrS",
+        "ipfs://Qmc6d74LpUenXR9W9KKqG9uad6bxzSH1aAbBpKHVj1KFRu",
+        "ipfs://QmZmxD12CA5nnYkW8eKCHFwPiJ4vPtZvsuysEUWaHk3vvj",
+        "ipfs://QmfLa8EkmfJfx9PceS6y9CZmJk5SSRM7e3H2qqaSuiJW4v",
+        "ipfs://QmaecVZqH9Uc4SgDkxH4HePnYhTf3gpPaAdbE2hP4bHwXz",
+        "ipfs://QmdP64p1YbfdRLmKXGLMC3knxDMxChZgYx5yEQzuNdkF4v",
+        "ipfs://QmcXjdKPsTQReeYKpHx7bbycBuNtNVrrAVEZTXcQs5ez1S",
+        "ipfs://QmZ8QJKr5DWjhyK4R5M6HAdGxjc7eWHi3xRBSg51xi4ycd",
+        "ipfs://Qmco9M8QyNZSnPBsyqgt3fovo6xhs83EV6TCvbEU1Ppxzx",
+        "ipfs://QmPk8a4YA6obwWVz7PcneMhVvxUN3jb4a8dTgxbj5EYQoZ"
         ];
     
     address public constant FEE_RECIPIENT = address(0x4);
