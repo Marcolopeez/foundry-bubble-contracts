@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import {Test, console} from "@forge-std/Test.sol";
+import {Test} from "@forge-std/Test.sol";
+import {console} from "lib/forge-std/src/Script.sol";
 import {Vm} from "@forge-std/Vm.sol";
 import {BubbleNFT} from "../../src/BubbleNFT.sol";
 import {BubbleMarketplace} from "../../src/BubbleMarketplace.sol";
@@ -253,7 +254,7 @@ contract BubbleMarketplace_Test is Test{
         
     }
 
-    function test_fulfillRandomWords_ForcingPause() onlyAnvil() public purchaseNFTs(4) {      
+    function test_fulfillRandomWords_ForcingPause() public onlyAnvil() purchaseNFTs(4) {      
         Vm.Log[] memory entries;
         uint256 requestId;
         vm.recordLogs();
@@ -274,6 +275,39 @@ contract BubbleMarketplace_Test is Test{
         ); 
         
         assertTrue(marketContract.paused(), "Market should be paused");
+    }
+
+    // In this test we are using the Fuzzing technique to test the fulfillRandomWords function.
+    // In that way, we can see if the function is working properly with different inputs. Aka, we can see when the market should be paused.
+    // The function will be called with a random word as a parameter. If the random word is divisible by 10, the market should be paused.
+    // So, the odds of the market being paused are 10%. Therefore, the test should revert in one of the first 10 calls. (Average)
+    function test_fulfillRandomWords_Fuzzing(uint256 randomWord) public onlyAnvil() purchaseNFTs(4) {      
+        Vm.Log[] memory entries;
+        uint256 requestId;
+        vm.recordLogs();
+        uint256[] memory notRandomWords = new uint256[](1);
+        notRandomWords[0] = randomWord;
+
+        vm.prank(USER1);
+        marketContract.purchase{value: 0.14641 ether}();
+            
+        entries = vm.getRecordedLogs();
+        requestId = uint256(entries[4].topics[1]);
+
+        
+        VRFCoordinatorV2Mock(vrfCoordinatorV2).fulfillRandomWordsWithOverride(
+            requestId,
+            address(marketContract),
+            notRandomWords
+        ); 
+
+        if(randomWord % 10 == 0){
+            console.log("Market should be paused");
+            assertTrue(marketContract.paused(), "Market should be paused");
+        }
+
+        vm.prank(USER1);
+        marketContract.purchase{value: 0.161051 ether}();
     }
 }
 
