@@ -6,6 +6,7 @@ import {HelperConfig} from "./HelperConfig.s.sol";
 import {BubbleMarketplace} from "../src/BubbleMarketplace.sol";
 import {DevOpsTools} from "@foundry-devops/DevOpsTools.sol";
 import {VRFCoordinatorV2Mock} from "../test/mocks/VRFCoordinatorV2Mock.sol";
+import {VRFCoordinatorV2Interface} from "@chainlink/contracts/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol";
 import {LinkToken} from "../test/mocks/LinkToken.sol";
 
 contract CreateSubscription is Script {
@@ -26,10 +27,14 @@ contract CreateSubscription is Script {
         address vrfCoordinatorV2,
         uint256 deployerKey
     ) public returns (uint64, address) {
+        uint64 subId;
         console.log("Creating subscription on chainId: ", block.chainid);
         vm.startBroadcast(deployerKey);
-        uint64 subId = VRFCoordinatorV2Mock(vrfCoordinatorV2)
-            .createSubscription();
+        if(block.chainid == 1){
+            subId = VRFCoordinatorV2Interface(vrfCoordinatorV2).createSubscription();
+        }else{
+            subId = VRFCoordinatorV2Mock(vrfCoordinatorV2).createSubscription();
+        }
         vm.stopBroadcast();
         console.log("Your subscription Id is: ", subId);
         console.log("Please update the subscriptionId in HelperConfig.s.sol");
@@ -52,10 +57,17 @@ contract AddConsumer is Script {
         console.log("Using vrfCoordinator: ", vrfCoordinator);
         console.log("On ChainID: ", block.chainid);
         vm.startBroadcast(deployerKey);
-        VRFCoordinatorV2Mock(vrfCoordinator).addConsumer(
-            subId,
-            contractToAddToVrf
-        );
+        if(block.chainid == 1){
+            VRFCoordinatorV2Interface(vrfCoordinator).addConsumer(
+                subId,
+                contractToAddToVrf
+            );
+        }else{
+            VRFCoordinatorV2Mock(vrfCoordinator).addConsumer(
+                subId,
+                contractToAddToVrf
+            );
+        }
         vm.stopBroadcast();
     }
 
@@ -82,7 +94,7 @@ contract AddConsumer is Script {
 }
 
 contract FundSubscription is Script {
-    uint96 public constant FUND_AMOUNT = 3 ether;
+    uint96 public constant FUND_AMOUNT = 30 ether;
 
     function fundSubscriptionUsingConfig() public {
         HelperConfig helperConfig = new HelperConfig();
@@ -115,14 +127,14 @@ contract FundSubscription is Script {
         console.log("Funding subscription: ", subId);
         console.log("Using vrfCoordinator: ", vrfCoordinatorV2);
         console.log("On ChainID: ", block.chainid);
-        if (block.chainid == 31337) {
+        if (block.chainid == 31337) { // anvil
             vm.startBroadcast(deployerKey);
             VRFCoordinatorV2Mock(vrfCoordinatorV2).fundSubscription(
                 subId,
                 FUND_AMOUNT
             );
             vm.stopBroadcast();
-        } else {
+        } else { 
             console.log(LinkToken(link).balanceOf(msg.sender));
             console.log(msg.sender);
             console.log(LinkToken(link).balanceOf(address(this)));

@@ -11,5 +11,8 @@ out/
 # Docs
 docs/
 
+# IPFS
+IPFS/
+
 # Dotenv file
 .env

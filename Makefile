@@ -33,14 +33,24 @@ format :; forge fmt
 
 anvil :; anvil -m 'test test test test test test test test test test test junk' --steps-tracing --block-time 1
 
-NETWORK_ARGS := --rpc-url http://localhost:8545 --private-key $(DEFAULT_ANVIL_KEY) --broadcast
+NETWORK_ARGS := --rpc-url http://localhost:8545 --account anvilKey --sender 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 --broadcast
 
 ifeq ($(findstring --network sepolia,$(ARGS)),--network sepolia)
-	NETWORK_ARGS := --rpc-url $(SEPOLIA_RPC_URL) --private-key $(PRIVATE_KEY) --broadcast --verify --etherscan-api-key $(ETHERSCAN_API_KEY) -vvvv
+	NETWORK_ARGS := --rpc-url $(SEPOLIA_RPC_URL) --account sepoliaKey --sender 0x97aa42a297049dd6078b97d4c1f9d384b52f5905 --broadcast --verify --etherscan-api-key $(ETHERSCAN_API_KEY) -vvvv
 endif
 
-deploy:
-	@forge script script/DeployContracts.s.sol:DeployContracts $(NETWORK_ARGS)
+ifeq ($(findstring --network mainnet,$(ARGS)),--network mainnet)
+	NETWORK_ARGS := --rpc-url $(MAINNET_RPC_URL) --account mainnetBubbleKey --sender 0x9e7f69C089683d0eB535A0D0E959363CA5706Ad8 --broadcast --verify --etherscan-api-key $(ETHERSCAN_API_KEY) -vvvv
+endif
+
+deployAnvil:
+	@forge script script/DeployAnvil.s.sol:DeployAnvil $(NETWORK_ARGS)
+	
+deploySepolia:
+	@forge script script/DeploySepolia.s.sol:DeploySepolia $(NETWORK_ARGS)
+
+deployMainnet:
+	@forge script script/DeployMainnet.s.sol:DeployMainnet $(NETWORK_ARGS)
 
 createSubscription:
 	@forge script script/Interactions.s.sol:CreateSubscription $(NETWORK_ARGS)

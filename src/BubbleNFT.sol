@@ -28,13 +28,13 @@ contract BubbleNFT is IBubbleNFT, ERC721, AccessControl {
     /**
      * @dev Constructor to mint 10 NFTs to the deployer and initialize contract state.
      */
-    constructor(string[10] memory tokenURIs) ERC721("BubbleNFT", "BLE") {
+    constructor(string[10] memory tokenURIs, address artists) ERC721("BubbleNFT", "BLE") {
         _grantRole(DEPLOYER_ROLE, msg.sender); 
 
         // Mint 10 NFTs to the deployer
         for (uint256 i = 0; i < 10; i++) {
             _tokenURIs[i] = tokenURIs[i];
-            _safeMint(msg.sender, i);
+            _safeMint(artists, i);
         }
 
         // Set the initial regulated state to true
@@ -82,7 +82,7 @@ contract BubbleNFT is IBubbleNFT, ERC721, AccessControl {
 
     /**
      * @dev Approve `operator` to operate on all of `owner` tokens
-     * @notice When the NFT is in the regulated state, only the marketplace can be approved.
+     * @notice When the NFT is in the regulated state this function reverts.
      *         When the NFT is not in the regulated state, the NFT works as a normal ERC721 token.
      * @param operator The address to approve
      * @param approved The token ID to approve
@@ -91,7 +91,7 @@ contract BubbleNFT is IBubbleNFT, ERC721, AccessControl {
         if(regulatedState) {
             revert("Set approval for all is not allowed in regulated state");       
         }
-        super.setApprovalForAll(operator, approved); // @todo This call change the msg.sender?
+        super.setApprovalForAll(operator, approved);
     }
 
     /**

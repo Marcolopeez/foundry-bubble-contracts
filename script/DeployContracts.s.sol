@@ -22,11 +22,11 @@ contract DeployContracts is Script {
         "ipfs://QmPk8a4YA6obwWVz7PcneMhVvxUN3jb4a8dTgxbj5EYQoZ"
         ];
     
-    address public constant FEE_RECIPIENT = address(0x4);
-    address public constant DEPLOYER = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
+    address public constant ARTISTS = address(0x91A8ACC8B933ffb6182c72dC9B45DEF7d6Ce7a0E);
+    uint256 public constant INITIAL_PRICE = 0.05 ether;
 
     function run() external returns (BubbleMarketplace, BubbleNFT, HelperConfig) {
-        HelperConfig helperConfig = new HelperConfig(); // This comes with our mocks!
+        HelperConfig helperConfig = new HelperConfig(); 
         AddConsumer addConsumer = new AddConsumer();
         (
             uint64 subscriptionId,
@@ -43,23 +43,24 @@ contract DeployContracts is Script {
                 vrfCoordinatorV2,
                 deployerKey
             );
-
-            FundSubscription fundSubscription = new FundSubscription();
-            fundSubscription.fundSubscription(
-                vrfCoordinatorV2,
-                subscriptionId,
-                link,
-                deployerKey
-            );
+            if(block.chainid != 1) {
+                FundSubscription fundSubscription = new FundSubscription();
+                fundSubscription.fundSubscription(
+                    vrfCoordinatorV2,
+                    subscriptionId,
+                    link,
+                    deployerKey
+                );
+            }
         }
 
         vm.startBroadcast(deployerKey);
         
-        BubbleNFT nftContract =  new BubbleNFT(metadataURIs);
+        BubbleNFT nftContract =  new BubbleNFT(metadataURIs, ARTISTS);
         BubbleMarketplace marketContract = new BubbleMarketplace(
             address(nftContract), 
-            payable(FEE_RECIPIENT), 
-            0.1 ether,
+            payable(ARTISTS), 
+            INITIAL_PRICE,
             vrfCoordinatorV2,
             gasLane,
             subscriptionId,
